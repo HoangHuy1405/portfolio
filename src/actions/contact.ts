@@ -15,7 +15,7 @@ interface ContactResponse {
 }
 
 // Initialize Resend client
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resendApiKey = process.env.RESEND_API_KEY;
 
 // Configuration
 const RECIPIENT_EMAIL = "nguyenmaihoanghuy@gmail.com";
@@ -29,6 +29,16 @@ export async function submitContactForm(
   formData: ContactFormData
 ): Promise<ContactResponse> {
   const { senderName, senderEmail, message } = formData;
+
+  if (!resendApiKey) {
+    console.error("Resend API key is missing");
+    return {
+      success: false,
+      message: "Server configuration error. Please try again later.",
+    };
+  }
+
+  const resend = new Resend(resendApiKey);
 
   // Validate required fields
   if (!senderName?.trim() || !senderEmail?.trim() || !message?.trim()) {
